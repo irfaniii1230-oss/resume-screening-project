@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Screener Pro - AI Recruitment Platform</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* SAME CSS AS BEFORE - keeping it short */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+
+        .page1 { height: 100vh; background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab); background-size: 400% 400%; animation: gradientBG 15s ease infinite; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: white; }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .page1 h1 { font-size: 5rem; font-weight: 900; margin-bottom: 20px; animation: titlePulse 2s infinite; }
+        @keyframes titlePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .mega-enter-btn { padding: 25px 60px; font-size: 2rem; font-weight: 800; background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #feca57); color: white; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-transform: uppercase; }
+        .mega-enter-btn:hover { transform: translateY(-10px) scale(1.1); box-shadow: 0 30px 60px rgba(0,0,0,0.4); }
+
+        .page2 { display: none; min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); align-items: center; justify-content: center; padding: 20px; }
+        .login-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); padding: 50px; border-radius: 25px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-width: 450px; width: 100%; }
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; font-weight: 600; color: #333; margin-bottom: 10px; }
+        .form-group input { width: 100%; padding: 15px 20px; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 16px; }
+        .login-btn { width: 100%; padding: 18px; background: linear-gradient(45deg, #667eea, #764ba2); color: white; border: none; border-radius: 12px; font-size: 1.2rem; font-weight: 700; cursor: pointer; }
+
+        .page3 { display: none; min-height: 100vh; background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%); padding: 30px; }
+        .tool-container { max-width: 1400px; margin: 0 auto; background: rgba(255,255,255,0.95); border-radius: 25px; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.3); }
+        .tool-header { background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; padding: 40px; text-align: center; }
+        .tool-content { padding: 50px; display: grid; grid-template-columns: 1fr 1fr; gap: 50px; }
+        .input-section { background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 40px; border-radius: 20px; border: 2px solid #e2e8f0; }
+        textarea { width: 100%; height: 280px; padding: 20px; border: 2px solid #e2e8f0; border-radius: 15px; font-family: monospace; font-size: 14px; resize: vertical; }
+        select { width: 100%; padding: 20px; border: 2px solid #e2e8f0; border-radius: 15px; font-size: 16px; background: white; cursor: pointer; margin-bottom: 25px; }
+        .analyze-btn { width: 100%; padding: 20px; background: linear-gradient(45deg, #10b981, #059669); color: white; border: none; border-radius: 15px; font-size: 1.3rem; font-weight: 700; cursor: pointer; text-transform: uppercase; }
+        .analyze-btn:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(16, 185, 129, 0.4); }
+
+        .results-section { background: white; border-radius: 20px; padding: 40px; }
+        .result-card { text-align: center; padding: 40px; border-radius: 20px; margin-bottom: 30px; }
+        .result-card.selected { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; }
+        .result-card.rejected { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; }
+        .result-score { font-size: 5rem; font-weight: 900; margin-bottom: 15px; }
+        .selection-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 30px 0; }
+        .company-card { padding: 25px; border: 3px solid #e2e8f0; border-radius: 15px; cursor: pointer; text-align: center; background: #f8fafc; }
+        .company-card:hover { border-color: #2563eb; transform: translateY(-8px); box-shadow: 0 20px 40px rgba(37, 99, 235, 0.15); }
+        .keyword-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 25px; }
+        .keyword-box.found { background: #ecfdf5; border: 2px solid #10b981; padding: 25px; border-radius: 15px; }
+        .keyword-box.missing { background: #fef2f2; border: 2px solid #ef4444; padding: 25px; border-radius: 15px; }
+        .loading { display: none; text-align: center; padding: 60px; }
+        .spinner { border: 4px solid #f3f4f6; border-top: 4px solid #2563eb; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @media (max-width: 768px) { .tool-content { grid-template-columns: 1fr; gap: 30px; padding: 20px; } }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <!-- PAGE 1 -->
+    <div class="page1" id="page1">
+        <h1>🚀 RESUME SCREENER PRO</h1>
+        <p style="font-size: 1.5rem; margin-bottom: 50px; opacity: 0.9;">AI-Powered Recruitment Platform</p>
+        <button class="mega-enter-btn" onclick="goToPage2()">ENTER PLATFORM</button>
+    </div>
+
+    <!-- PAGE 2 -->
+    <div class="page2" id="page2">
+        <div class="login-card">
+            <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 30px;">
+                <i class="fas fa-user-shield"></i> Candidate Login
+            </h2>
+            <form onsubmit="login(event)">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Full Name</label>
+                    <input type="text" id="userName" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Gmail</label>
+                    <input type="email" id="userEmail" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-phone"></i> Mobile</label>
+                    <input type="tel" id="userPhone" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="userPassword" required>
+                </div>
+                <button type="submit" class="login-btn">ACCESS RESUME TOOL</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- PAGE 3 -->
+    <div class="page3" id="page3">
+        <div class="tool-container">
+            <div class="tool-header">
+                <h1><i class="fas fa-briefcase"></i> Resume Analysis Tool</h1>
+                <p>Paste resume → Select role → Get instant results</p>
+            </div>
+            <div class="tool-content">
+                <div class="input-section">
+                    <div style="font-weight: 700; color: #1e293b; margin-bottom: 15px; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-file-alt"></i> Paste Resume
+                    </div>
+                    <textarea id="resumeText" placeholder="Copy-paste complete resume here..."></textarea>
+                    
+                    <div style="font-weight: 700; color: #1e293b; margin-bottom: 15px; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-briefcase"></i> Job Role
+                    </div>
+                    <select id="jobRole">
+                        <option value="">Choose role...</option>
+                        <option value="software">💻 Software Engineer</option>
+                        <option value="data">📊 Data Scientist</option>
+                        <option value="devops">⚙️ DevOps Engineer</option>
+                        <option value="cloud">☁️ Cloud Engineer</option>
+                        <option value="aeronautical">✈️ Aeronautical Engineer</option>
+                        <option value="mechanical">🔧 Mechanical Engineer</option>
+                        <option value="civil">🏗️ Civil Engineer</option>
+                        <option value="electrical">⚡ Electrical Engineer</option>
+                    </select>
+                    <button class="analyze-btn" onclick="analyzeResume()">ANALYZE NOW</button>
+                </div>
+
+                <div class="results-section">
+                    <div class="loading" id="loading">
+                        <div class="spinner"></div>
+                        <p><strong>AI Analyzing Resume...</strong></p>
+                    </div>
+                    <div id="results" class="hidden">
+                        <div class="result-card" id="resultCard">
+                            <div class="result-score" id="scoreNumber">--</div>
+                            <div id="resultTitle">Click Analyze</div>
+                            <div class="selection-grid" id="companySelection" style="display: none;">
+                                <h3>🎉 SELECT COMPANY</h3>
+                                <div class="company-card" data-company="TCS">👨‍💼 TCS</div>
+                                <div class="company-card" data-company="Infosys">🔵 Infosys</div>
+                                <div class="company-card" data-company="Wipro">📊 Wipro</div>
+                                <div class="company-card" data-company="Accenture">⭐ Accenture</div>
+                                <div class="company-card" data-company="Google">🇬 Google</div>
+                                <div class="company-card" data-company="Microsoft">🪟 Microsoft</div>
+                            </div>
+                        </div>
+                        <div class="keyword-grid">
+                            <div class="keyword-box found">
+                                <h4 style="color: #059669; margin-bottom: 15px;"><i class="fas fa-check-circle"></i> ✅ FOUND</h4>
+                                <div id="foundKeywords">No analysis yet</div>
+                            </div>
+                            <div class="keyword-box missing">
+                                <h4 style="color: #dc2626; margin-bottom: 15px;"><i class="fas fa-times-circle"></i> ❌ MISSING</h4>
+                                <div id="missingKeywords">No analysis yet</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JOB DATABASE
+        const JOB_KEYWORDS = {
+            software: { name: "Software Engineer", must_have: ["python","java","javascript","sql","git","docker","aws","react"], nice_to_have: ["nodejs","microservices"] },
+            data: { name: "Data Scientist", must_have: ["python","sql","pandas","numpy","sklearn"], nice_to_have: ["tensorflow","tableau"] },
+            devops: { name: "DevOps Engineer", must_have: ["docker","kubernetes","jenkins","terraform","aws"], nice_to_have: ["ansible","prometheus"] },
+            cloud: { name: "Cloud Engineer", must_have: ["aws","azure","terraform","docker","kubernetes"], nice_to_have: ["ansible","cloudformation"] },
+            aeronautical: { name: "Aeronautical Engineer", must_have: ["ansys","catia","solidworks","aerodynamics"], nice_to_have: ["matlab"] },
+            mechanical: { name: "Mechanical Engineer", must_have: ["solidworks","autocad","ansys","creo"], nice_to_have: ["fmea"] },
+            civil: { name: "Civil Engineer", must_have: ["autocad","staad","etabs","concrete"], nice_to_have: ["primavera"] },
+            electrical: { name: "Electrical Engineer", must_have: ["etap","autocad","plc","scada"], nice_to_have: ["matlab"] }
+        };
+
+        // PAGE NAVIGATION
+        function goToPage2() {
+            document.getElementById('page1').style.display = 'none';
+            document.getElementById('page2').style.display = 'flex';
+        }
+
+        function login(event) {
+            event.preventDefault();
+            document.getElementById('page2').style.display = 'none';
+            document.getElementById('page3').style.display = 'block';
+        }
+
+        // **FIXED ANALYZE FUNCTION**
+        function analyzeResume() {
+            const resumeText = document.getElementById('resumeText').value;
+            const jobRole = document.getElementById('jobRole').value;
+
+            console.log("Analyzing...", resumeText.substring(0, 100), jobRole); // DEBUG
+
+            if (!resumeText.trim() || !jobRole) {
+                alert('Please paste resume AND select job role');
+                return;
+            }
+
+            // SHOW LOADING
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').classList.add('hidden');
+
+            setTimeout(() => {
+                const jobKeywords = JOB_KEYWORDS[jobRole];
+                const resumeWords = resumeText.toLowerCase().replace(/[^\w\s]/g, ' ').replace(/\s+/g, ' ').split(' ').filter(w => w.length > 2);
+                
+                // MATCH KEYWORDS
+                const mustHaveFound = jobKeywords.must_have.filter(kw => resumeWords.some(word => word.includes(kw)));
+                const niceFound = jobKeywords.nice_to_have.filter(kw => resumeWords.some(word => word.includes(kw)));
+                
+                // CALCULATE SCORE
+                const mustScore = (mustHaveFound.length / jobKeywords.must_have.length) * 60;
+                const niceScore = (niceFound.length / jobKeywords.nice_to_have.length) * 40;
+                const totalScore = Math.round(Math.min(100, mustScore + niceScore));
+
+                console.log("Score calculated:", totalScore, mustHaveFound, niceFound); // DEBUG
+
+                displayResults(totalScore, mustHaveFound, niceFound, jobKeywords);
+            }, 2000);
+        }
+
+        function displayResults(score, foundMust, foundNice, jobKeywords) {
+            console.log("Displaying results for score:", score); // DEBUG
+
+            document.getElementById('loading').style.display = 'none';
+            
+            // UPDATE SCORE DISPLAY
+            document.getElementById('scoreNumber').textContent = score;
+            const resultCard = document.getElementById('resultCard');
+            const resultTitle = document.getElementById('resultTitle');
+            const companySelection = document.getElementById('companySelection');
+            
+            resultCard.className = 'result-card';
+            
+            if (score >= 75) {
+                resultCard.classList.add('selected');
+                resultTitle.innerHTML = `<div style="font-size: 2rem;">🎉 SELECTED!</div><div>${jobKeywords.name}</div>`;
+                companySelection.style.display = 'grid';
+            } else {
+                resultCard.classList.add('rejected');
+                resultTitle.innerHTML = `<div style="font-size: 2rem;">❌ NOT SELECTED</div><div>${jobKeywords.name}</div>`;
+                companySelection.style.display = 'none';
+            }
+
+            // SHOW KEYWORDS
+            const allFound = [...foundMust, ...foundNice];
+            document.getElementById('foundKeywords').innerHTML = allFound.length ? 
+                allFound.map(kw => `<div style="padding: 8px; margin: 5px 0; background: white; border-radius: 5px; display: flex; gap: 8px;"><i class="fas fa-check" style="color: #10b981;"></i> ${kw}</div>`).join('') :
+                '<div style="color: #666;">No matches found</div>';
+            
+            document.getElementById('missingKeywords').innerHTML = 
+                jobKeywords.must_have.filter(kw => !allFound.includes(kw)).map(kw => 
+                    `<div style="padding: 8px; margin: 5px 0; background: white; border-radius: 5px; display: flex; gap: 8px;"><i class="fas fa-times" style="color: #ef4444;"></i> ${kw}</div>`
+                ).join('');
+
+            document.getElementById('results').classList.remove('hidden');
+        }
+
+        // COMPANY CLICK
+        document.addEventListener('click', e => {
+            if (e.target.closest('.company-card')) {
+                const company = e.target.closest('.company-card').dataset.company;
+                alert(`🎉 SELECTED BY ${company.toUpperCase()}!\nWelcome to your dream job! 🚀`);
+            }
+        });
+    </script>
+</body>
+</html>
